@@ -11,7 +11,15 @@ export const siteConfig = {
   hotlines: [
     { location: "Texas", number: "+1 281 299 0989", display: "+1 281 299 0989" }
   ],
-  
+
+paymentMethods: [
+    { name: 'Zelle', desc: '' },
+    { name: 'Venmo', desc: '' },
+    { name: 'Cash App', desc: '' },
+    { name: 'Ký check', desc: '(chụp 2 mặt gửi qua messenger)' },
+    { name: 'Thanh toán theo cách khác', desc: '' },
+
+  ],
   email: "lienhe@haruco.vn",
   
   facebook: {

@@ -18,3 +18,14 @@
 @layer components {
   /* Giữ nguyên các code cũ ở dưới nếu có */
 }
+
+/* keyframe cho hiệu ứng phập phồng (thu nhỏ phóng to) */
+@keyframes scale-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Class hoạt hình tùy chỉnh dùng cho Tailwind */
+.animate-scale-pulse {
+  animation: scale-pulse 0.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
