@@ -3,12 +3,12 @@ import { siteConfig } from '../config';
 export default function Footer() {
   return (
     <footer className="bg-blue-900 text-white py-10 border-t-4 border-red-500">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-start gap-8">
+      {/* Sử dụng grid để chia 2 cột trên PC (md:grid-cols-2), trên mobile vẫn là 1 cột */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
         
-        {/* Khối Thông Tin Liên Hệ */}
-        <div className="w-full text-left space-y-5 text-sm sm:text-base text-gray-200">
+        {/* Cột 1 (Bên Trái): Khối Thông Tin Liên Hệ */}
+        <div className="flex flex-col items-start space-y-5 text-sm sm:text-base text-gray-200">
           
-          {/* Tự động lấy danh sách địa chỉ quốc gia từ config */}
           <div className="space-y-1">
             {siteConfig.locations.map((loc, index) => (
               <div key={index}>
@@ -17,7 +17,6 @@ export default function Footer() {
             ))}
           </div>
 
-          {/* Hotline & Email */}
           <div className="space-y-1">
             <div className="font-bold text-white text-base sm:text-lg">Hotline:</div>
             {siteConfig.hotlines.map((hotline, index) => (
@@ -35,8 +34,9 @@ export default function Footer() {
 
         </div>
         
-        {/* Khối Fanpage Facebook */}
-        <div className="w-full border-t border-blue-800/60 pt-6 flex flex-col items-start gap-4">
+        {/* Cột 2 (Bên Phải trên PC): Khối Fanpage Facebook */}
+        {/* md:items-end giúp đẩy cả khối sang bên phải. md:border-t-0 để ẩn đường kẻ ngang trên PC */}
+        <div className="flex flex-col items-start md:items-end border-t border-blue-800/60 md:border-t-0 pt-6 md:pt-0 h-full">
           
           <div className="bg-white rounded-lg p-3 w-full max-w-sm flex items-center gap-4 shadow-lg text-left text-gray-900">
             <img 
@@ -56,7 +56,8 @@ export default function Footer() {
             </div>
           </div>
 
-          <p className="text-xs text-gray-400 mt-2">
+          {/* md:mt-auto giúp đẩy dòng Copyright xuống dưới cùng cho thẳng hàng với cột trái */}
+          <p className="text-xs text-gray-400 mt-4 md:mt-auto w-full text-left md:text-right">
             © 2026 Haruco International. All rights reserved.
           </p>
         </div>
