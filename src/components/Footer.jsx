@@ -48,7 +48,7 @@ export default function Footer() {
               <a href={siteConfig.facebook.url} target="_blank" rel="noreferrer" className="text-blue-800 font-bold hover:underline text-sm line-clamp-1">
                 {siteConfig.facebook.name}
               </a>
-              <div className="text-gray-500 text-xs mt-0.5">Hơn 50.000 người theo dõi</div>
+              <div className="text-gray-500 text-xs mt-0.5">Hơn 1,4k người theo dõi</div>
               
               <a href={siteConfig.facebook.url} target="_blank" rel="noreferrer" className="mt-1.5 inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold px-2.5 py-1 rounded transition">
                 Thích Trang
