@@ -20,7 +20,7 @@ paymentMethods: [
     { name: 'Thanh toán theo cách khác', desc: '' },
 
   ],
-  email: "lienhe@haruco.vn",
+  email: "harucojapan@gmail.com",
   
   facebook: {
     name: "Đai Chữa Đau Lưng Haruco Chính Hãng Nhật Bản",
