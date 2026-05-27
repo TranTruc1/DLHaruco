@@ -89,13 +89,6 @@ export default function AboutDetail() {
             </div>
           </div>
         </div>
-        
-        <div className="text-center pt-4 md:pt-8">
-          <a href="#dat-hang" className="inline-block w-full md:w-auto bg-red-500 hover:bg-red-600 text-white font-bold py-3.5 md:py-4 px-8 md:px-12 rounded-xl md:rounded-2xl text-lg md:text-xl transition shadow-lg hover:-translate-y-1 transform">
-            Tôi Muốn Đặt Hàng Ngay
-          </a>
-        </div>
-
       </div>
     </section>
   )

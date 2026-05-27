@@ -9,7 +9,7 @@ export const siteConfig = {
   ],
   
   hotlines: [
-    { location: "Texas", number: "+1 281 299 0989", display: "+1 (123) 456-7890" }
+    { location: "Texas", number: "+1 281 299 0989", display: "+1 281 299 0989" }
   ],
   
   email: "lienhe@haruco.vn",
