@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html, body {
+    font-family: Arial, Helvetica, sans-serif !important;
+  }
+  
+  html {
+    /* Cuộn mượt mà khi click menu */
+    scroll-behavior: smooth; 
+    /* Bù trừ 90px (đúng bằng chiều cao của thanh Navbar) để không bị che chữ */
+    scroll-padding-top: 90px; 
+  }
+}
+
+@layer components {
+  /* Giữ nguyên các code cũ ở dưới nếu có */
+}
