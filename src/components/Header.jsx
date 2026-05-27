@@ -1,74 +1,121 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Header() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [activeSection, setActiveSection] = useState('gioi-thieu');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
-  // Hàm xử lý khi bấm vào logo cuộn mượt về đầu trang
-  const handleLogoClick = (e) => {
+  // Danh sách các menu và ID của từng phần tương ứng trên trang
+  const navLinks = [
+    { id: 'gioi-thieu', title: 'Giới thiệu' },
+    { id: 'gioi-thieu-chi-tiet', title: 'Cấu tạo' }, // Tương ứng ID của AboutDetail
+    { id: 'tinh-nang', title: 'Tính năng' }, // Tương ứng ID của Features
+    { id: 'danh-gia', title: 'Đánh giá' } // Tương ứng ID của Reviews
+  ];
+
+  // Theo dõi vị trí cuộn trang để đổi màu menu
+  useEffect(() => {
+    const handleScroll = () => {
+      // Cộng thêm 100px để bù trừ chiều cao của chính thanh navbar (cho chuẩn xác)
+      const scrollPosition = window.scrollY + 100;
+
+      const currentSection = navLinks.find(link => {
+        const section = document.getElementById(link.id);
+        if (section) {
+          const offsetTop = section.offsetTop;
+          const offsetBottom = offsetTop + section.offsetHeight;
+          return scrollPosition >= offsetTop && scrollPosition < offsetBottom;
+        }
+        return false;
+      });
+
+      if (currentSection) {
+        setActiveSection(currentSection.id);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Kích hoạt ngay lần đầu load trang
+    
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Xử lý khi click vào menu
+  const handleClick = (e, id) => {
     e.preventDefault();
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    setIsOpen(false);
+    const section = document.getElementById(id);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+      setActiveSection(id);
+      setIsMobileMenuOpen(false); // Tự động đóng menu trên mobile
+    }
   };
 
   return (
-    <header className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-100 sticky top-0 z-50 w-full transform-gpu antialiased">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-3 md:py-4">
-          
-          {/* Logo */}
-          <a href="#" onClick={handleLogoClick} className="flex items-center gap-2 cursor-pointer">
-            <img src="/assets/logos/logo-haruco.png" alt="Logo Haruco" className="h-10 md:h-12 w-auto object-contain" />
-            <span className="text-2xl sm:text-3xl font-extrabold text-blue-700 hidden lg:block">HARUCO</span>
+    <header className="bg-white/95 backdrop-blur-sm shadow-sm border-b border-gray-100 sticky top-0 z-50 w-full">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
+        
+        {/* Logo */}
+        <a href="#" className="flex items-center gap-3">
+          <img src="/assets/logos/logo-haruco.png" alt="Haruco Logo" className="w-12 h-12" />
+        </a>
+
+        {/* Menu PC */}
+        <nav className="hidden md:flex items-center gap-8">
+          {navLinks.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => handleClick(e, link.id)}
+              className={`text-lg font-medium transition-colors ${
+                activeSection === link.id 
+                  ? 'text-blue-600 font-bold' // Màu xanh khi đang ở phần này
+                  : 'text-gray-700 hover:text-blue-600' // Màu xám khi ở phần khác
+              }`}
+            >
+              {link.title}
+            </a>
+          ))}
+        </nav>
+
+        {/* Nút Mua Ngay & Hamburger Menu Mobile */}
+        <div className="flex items-center gap-4">
+          <a 
+            href="#dat-hang"
+            onClick={(e) => handleClick(e, 'dat-hang')}
+            className="bg-red-500 hover:bg-red-600 text-white font-bold py-2.5 px-6 rounded-full shadow-md transition transform hover:-translate-y-0.5"
+          >
+            Mua Ngay
           </a>
           
-          {/* Menu PC */}
-          <nav className="hidden md:flex gap-6 lg:gap-8 font-medium text-gray-700">
-            <a href="#gioi-thieu" className="hover:text-blue-600 transition">Giới thiệu</a>
-            <a href="#gioi-thieu-chi-tiet" className="hover:text-blue-600 transition font-bold text-blue-600">Cấu tạo</a>
-            <a href="#tinh-nang" className="hover:text-blue-600 transition">Tính năng</a>
-            <a href="#danh-gia" className="hover:text-blue-600 transition">Đánh giá</a>
-          </nav>
+          <button 
+            className="md:hidden p-2 text-gray-600"
+            onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
 
-          {/* Nút CTA & Hamburger Mobile */}
-          <div className="flex items-center gap-3 sm:gap-4">
-            <a href="#dat-hang" className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 md:px-6 md:py-2.5 rounded-full font-bold transition text-sm md:text-base shadow-sm hover:shadow-md">
-              Mua Ngay
-            </a>
-            
-            {/* Nút Menu Mobile dùng SVG siêu nét */}
-            <button 
-              className="md:hidden text-gray-800 p-1 focus:outline-none"
-              onClick={() => setIsOpen(!isOpen)}
+      </div>
+
+      {/* Menu Mobile */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-100 px-4 py-4 space-y-4 shadow-lg absolute w-full left-0">
+          {navLinks.map((link) => (
+            <a
+              key={link.id}
+              href={`#${link.id}`}
+              onClick={(e) => handleClick(e, link.id)}
+              className={`block text-lg font-medium ${
+                activeSection === link.id ? 'text-blue-600 font-bold' : 'text-gray-700'
+              }`}
             >
-              {isOpen ? (
-                // Icon Dấu X khi đang mở menu
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              ) : (
-                // Icon Hamburger khi đang đóng menu
-                <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              )}
-            </button>
-          </div>
+              {link.title}
+            </a>
+          ))}
         </div>
-      </div>
-
-      {/* Menu Mobile - Có hiệu ứng xổ xuống (fade + slide) */}
-      <div 
-        className={`md:hidden absolute top-full left-0 w-full bg-white border-t border-gray-100 shadow-xl transition-all duration-300 origin-top ${
-          isOpen ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0 pointer-events-none'
-        }`}
-      >
-        <div className="px-5 py-4 flex flex-col space-y-4">
-          <a href="#gioi-thieu" onClick={() => setIsOpen(false)} className="block font-medium text-gray-800 text-lg">Giới thiệu</a>
-          <a href="#gioi-thieu-chi-tiet" onClick={() => setIsOpen(false)} className="block font-bold text-blue-600 text-lg">Cấu tạo chi tiết</a>
-          <a href="#tinh-nang" onClick={() => setIsOpen(false)} className="block font-medium text-gray-800 text-lg">Tính năng</a>
-          <a href="#danh-gia" onClick={() => setIsOpen(false)} className="block font-medium text-gray-800 text-lg">Đánh giá</a>
-        </div>
-      </div>
+      )}
     </header>
   );
 }
