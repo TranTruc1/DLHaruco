@@ -28,7 +28,7 @@ export default function ProductDetails() {
              />
           </div>
           <p className="text-base sm:text-lg text-gray-700 mt-4 sm:mt-6 italic text-center lg:text-left">
-            Sản phẩm được bảo chứng chất lượng bởi các chuyên gia Nhật Bản, với thiết kế hoa anh đào và núi Phú Sĩ biểu tượng.
+            Đai lưng HARUCO được nhập khẩu chính hãng tại Nhật Bản.
           </p>
         </div>
 
