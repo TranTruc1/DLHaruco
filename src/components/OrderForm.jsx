@@ -104,7 +104,7 @@ export default function OrderForm() {
             </h2>
             <p className="text-sm lg:text-lg text-gray-700 mb-4 text-center lg:text-left">
               Nhận ưu đãi giảm <span className="font-bold text-red-500">{phanTramGiam}%</span> ngay hôm nay.
-              <span className="hidden lg:inline"> Số lượng có hạn!</span>
+              <span className="hidden lg:inline"> và Mua 1 Tặng 1. Số lượng có hạn!</span>
             </p>
             
             <div className="flex items-center justify-center lg:justify-start gap-3 lg:gap-4 mb-5 lg:mb-6">
