@@ -58,7 +58,7 @@ export default function Footer() {
 
           {/* md:mt-auto giúp đẩy dòng Copyright xuống dưới cùng cho thẳng hàng với cột trái */}
           <p className="text-xs text-gray-400 mt-4 md:mt-auto w-full text-left md:text-right">
-            © 2026 Haruco International. All rights reserved.
+            © 2020 Haruco. All rights reserved.
           </p>
         </div>
         
