@@ -8,8 +8,8 @@ const init = {
   name: "",
   address: "",
   phone: "",
-  payment: "", 
-  ip: "Đang tạo mã...", 
+  payment: "",
+  ip: "Đang lấy IP...",
 };
 
 export default function OrderForm() {
@@ -21,32 +21,25 @@ export default function OrderForm() {
   const [form, setForm] = useState(init);
   const [status, setStatus] = useState("idle");
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [countdown, setCountdown] = useState(5); 
+  const [countdown, setCountdown] = useState(5);
 
+  // Lấy IP thực của người dùng
   useEffect(() => {
-    let sessionID = localStorage.getItem("haruco_session_id");
-    
-    if (!sessionID) {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      sessionID = "";
-      for (let i = 0; i < 10; i++) {
-        sessionID += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      localStorage.setItem("haruco_session_id", sessionID);
-    }
-    
-    setForm((prev) => ({ ...prev, ip: sessionID }));
+    fetch("https://api.ipify.org?format=json")
+      .then((res) => res.json())
+      .then((data) => setForm((prev) => ({ ...prev, ip: data.ip })))
+      .catch(() => setForm((prev) => ({ ...prev, ip: "unknown" })));
   }, []);
 
   useEffect(() => {
     let timer;
     if (status === "success") {
-      setCountdown(5); 
+      setCountdown(5);
       timer = setInterval(() => {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer);
-            setStatus("idle"); 
+            setStatus("idle");
             return 0;
           }
           return prev - 1;
@@ -54,7 +47,7 @@ export default function OrderForm() {
       }, 1000);
     }
     return () => {
-      if (timer) clearInterval(timer); 
+      if (timer) clearInterval(timer);
     };
   }, [status]);
 
@@ -69,7 +62,7 @@ export default function OrderForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!form.payment) {
       alert("Vui lòng chọn phương thức thanh toán!");
       setShowPaymentModal(true);
@@ -81,12 +74,12 @@ export default function OrderForm() {
       await fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" }, 
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
         body: JSON.stringify(form),
       });
-      
+
       setStatus("success");
-      setForm((prev) => ({ ...init, ip: prev.ip })); 
+      setForm((prev) => ({ ...init, ip: prev.ip }));
     } catch {
       setStatus("error");
       alert("Có lỗi xảy ra, vui lòng thử lại!");
@@ -97,7 +90,7 @@ export default function OrderForm() {
     <section id="dat-hang" className="py-8 lg:py-16 bg-sky-100 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 bg-white shadow-2xl rounded-2xl lg:rounded-3xl overflow-hidden border border-gray-100 p-4 lg:p-10">
-          
+
           <div className="flex-1 flex flex-col justify-center">
             <h2 className="text-2xl lg:text-4xl font-bold text-gray-950 mb-2 lg:mb-4 text-center lg:text-left">
               Sở Hữu Đai Lưng <span className="text-blue-700">HARUCO</span>
@@ -106,12 +99,12 @@ export default function OrderForm() {
               Nhận ưu đãi giảm <span className="font-bold text-red-500">{phanTramGiam}%</span> ngay hôm nay.
               <span className="hidden lg:inline"> Số lượng có hạn!</span>
             </p>
-            
+
             <div className="flex items-center justify-center lg:justify-start gap-3 lg:gap-4 mb-5 lg:mb-6">
               <div className="text-gray-400 line-through text-xl lg:text-2xl">{formatPrice(giaGoc)}</div>
               <div className="text-3xl lg:text-5xl font-extrabold text-blue-700">{formatPrice(giaGiam)}</div>
             </div>
-            
+
             <div className="bg-blue-50 p-4 lg:p-5 rounded-xl lg:rounded-2xl border border-blue-100 flex items-center justify-center lg:justify-start gap-3">
               <span className="text-2xl lg:text-3xl">🛡️</span>
               <span className="font-bold text-blue-900 text-base lg:text-xl">Bảo hành 12 tháng lỗi 1 đổi 1</span>
@@ -124,44 +117,44 @@ export default function OrderForm() {
 
               <form className="space-y-4" onSubmit={handleSubmit}>
                 <div>
-                  <input 
-                    type="text" 
-                    name="name" 
-                    value={form.name} 
-                    onChange={handleChange} 
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 outline-none transition" 
-                    placeholder="Họ và tên *" 
-                    required 
+                  <input
+                    type="text"
+                    name="name"
+                    value={form.name}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 outline-none transition"
+                    placeholder="Họ và tên *"
+                    required
                   />
                 </div>
 
                 <div>
-                  <input 
-                    type="tel" 
-                    name="phone" 
-                    value={form.phone} 
-                    onChange={handleChange} 
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 outline-none transition" 
-                    placeholder="Số PHONE*" 
-                    required 
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={form.phone}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 outline-none transition"
+                    placeholder="Số PHONE*"
+                    required
                   />
                 </div>
 
                 <div>
-                  <textarea 
-                    name="address" 
-                    value={form.address} 
-                    onChange={handleChange} 
-                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 outline-none transition resize-none" 
-                    rows="2" 
-                    placeholder="Địa chỉ nhận hàng (USA) *" 
+                  <textarea
+                    name="address"
+                    value={form.address}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 outline-none transition resize-none"
+                    rows="2"
+                    placeholder="Địa chỉ nhận hàng (USA) *"
                     required
                   ></textarea>
                 </div>
 
                 <div>
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={() => setShowPaymentModal(true)}
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg text-left bg-white focus:ring-2 focus:ring-blue-300 outline-none transition flex justify-between items-center"
                   >
@@ -172,8 +165,8 @@ export default function OrderForm() {
                   </button>
                 </div>
 
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   className="w-full bg-red-500 hover:bg-red-600 text-white font-extrabold py-3.5 rounded-xl text-lg transition mt-2 shadow-lg hover:shadow-red-500/40 hover:-translate-y-0.5 transform flex justify-center items-center gap-2"
                 >
                   🛒 Xác Nhận Đặt Hàng
@@ -215,12 +208,11 @@ export default function OrderForm() {
         </div>
       )}
 
-      {/* Modal Chọn Phương Thức Thanh Toán - Cập nhật để nhận object */}
       {showPaymentModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl relative">
             <h3 className="text-xl font-bold text-gray-900 mb-4 text-center border-b pb-3">Cách thanh toán</h3>
-            
+
             <div className="space-y-3">
               {siteConfig.paymentMethods.map((method) => (
                 <button
@@ -228,17 +220,16 @@ export default function OrderForm() {
                   type="button"
                   onClick={() => handleSelectPayment(method.name)}
                   className={`w-full text-left px-5 py-3 border rounded-xl transition-all ${
-                    form.payment === method.name 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 hover:bg-gray-50 hover:border-gray-300'
+                    form.payment === method.name
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                   }`}
                 >
-                  <div className={`font-medium ${form.payment === method.name ? 'text-blue-700' : 'text-gray-800'}`}>
+                  <div className={`font-medium ${form.payment === method.name ? "text-blue-700" : "text-gray-800"}`}>
                     {method.name}
                   </div>
-                  {/* Hiển thị dòng mô tả nếu config có dữ liệu */}
                   {method.desc && (
-                    <div className={`text-xs mt-0.5 ${form.payment === method.name ? 'text-blue-500' : 'text-gray-500'}`}>
+                    <div className={`text-xs mt-0.5 ${form.payment === method.name ? "text-blue-500" : "text-gray-500"}`}>
                       {method.desc}
                     </div>
                   )}
@@ -246,9 +237,9 @@ export default function OrderForm() {
               ))}
             </div>
 
-            <button 
-              type="button" 
-              onClick={() => setShowPaymentModal(false)} 
+            <button
+              type="button"
+              onClick={() => setShowPaymentModal(false)}
               className="mt-6 w-full py-2.5 text-center text-gray-500 font-medium hover:text-gray-800 transition"
             >
               Đóng

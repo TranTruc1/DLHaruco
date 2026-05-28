@@ -26,36 +26,25 @@ export default function Header() {
 // ==========================================
   // 1. TÍNH NĂNG ĐẾM LƯỢT TRUY CẬP (Chống F5)
   // ==========================================
-  useEffect(() => {
-    let sessionID = localStorage.getItem("haruco_session_id");
-    if (!sessionID) {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      sessionID = "";
-      for (let i = 0; i < 10; i++) {
-        sessionID += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      localStorage.setItem("haruco_session_id", sessionID);
-    }
+useEffect(() => {
+  if (!sessionStorage.getItem("view_tracked")) {
+    sessionStorage.setItem("view_tracked", "true");
 
-    // Kiểm tra cờ chặn
-    if (!sessionStorage.getItem("view_tracked")) {
-      // Đặt cờ chặn NGAY LẬP TỨC để block request thứ 2 của React Strict Mode
-      sessionStorage.setItem("view_tracked", "true");
-
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-        body: JSON.stringify({ 
-          action: "view", 
-          ip: sessionID 
-        }),
-      }).catch(() => {
-        // Nếu lỗi mạng, gỡ cờ để lần sau thử lại
+    fetch("https://api.ipify.org?format=json")
+      .then((res) => res.json())
+      .then((data) => {
+        fetch(SCRIPT_URL, {
+          method: "POST",
+          mode: "no-cors",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+          body: JSON.stringify({ action: "view", ip: data.ip }),
+        });
+      })
+      .catch(() => {
         sessionStorage.removeItem("view_tracked");
       });
-    }
-  }, []);
+  }
+}, []);
 
   // Xử lý click chuyển mục
   const handleClick = (e, id) => {
