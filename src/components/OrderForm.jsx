@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { siteConfig } from '../config'; 
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq3_jnXC1LgWH6gijcHoya8ojY-SLE4yjgShbIgV64e-fTveWyfPAFICKP6XQN-snV/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzNVduh_HHs1wp65Mlqmcq-xmeQT2TRtkiqssim1Db26y2BM9wqk3uBoNX1KUl-5sxh/exec";
 
 const init = {
   product: "Đai lưng Haruco",
