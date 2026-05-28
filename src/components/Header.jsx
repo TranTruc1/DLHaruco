@@ -8,31 +8,6 @@ export default function Header() {
   // ==========================================
   // 1. TÍNH NĂNG ĐẾM LƯỢT TRUY CẬP (Chống F5)
   // ==========================================
-  useEffect(() => {
-    let sessionID = localStorage.getItem("haruco_session_id");
-    if (!sessionID) {
-      const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-      sessionID = "";
-      for (let i = 0; i < 10; i++) {
-        sessionID += chars.charAt(Math.floor(Math.random() * chars.length));
-      }
-      localStorage.setItem("haruco_session_id", sessionID);
-    }
-
-    if (!sessionStorage.getItem("view_tracked")) {
-      fetch(SCRIPT_URL, {
-        method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" }, 
-        body: JSON.stringify({ 
-          action: "view", 
-          ip: sessionID 
-        }),
-      }).then(() => {
-        sessionStorage.setItem("view_tracked", "true");
-      }).catch(() => {});
-    }
-  }, []);
 
   // ==========================================
   // 2. STATE VÀ DATA MENU
