@@ -7,7 +7,8 @@ import Features from './components/Features'
 import Reviews from './components/Reviews'
 import OrderForm from './components/OrderForm'
 import Footer from './components/Footer'
-import OrderCheck from './components/pages/OrderCheck' // Đảm bảo import đúng đường dẫn file OrderCheck của bạn
+import OrderCheck from './components/pages/OrderCheck'
+import InvoicePage from './components/pages/Invoicepage ' // ✅ Trang hóa đơn mới
 
 // Component chứa toàn bộ giao diện trang chủ (Landing Page)
 function LandingPage() {
@@ -17,7 +18,7 @@ function LandingPage() {
       <main className="flex-grow">
         <Hero />
         <ProductDetails />
-        <AboutDetail /> 
+        <AboutDetail />
         <Features />
         <Reviews />
         <OrderForm />
@@ -32,10 +33,13 @@ export default function App() {
   return (
     <Router>
       <Routes>
-        {/* Đường dẫn mặc định: Trang đích bán hàng */}
+        {/* Trang đích bán hàng */}
         <Route path="/" element={<LandingPage />} />
-        
-        {/* Đường dẫn quản trị: Check đơn hàng */}
+
+        {/* ✅ Trang hóa đơn sau khi đặt hàng thành công */}
+        <Route path="/invoice" element={<InvoicePage />} />
+
+        {/* Trang quản trị: Check đơn hàng */}
         <Route path="/app/donhang" element={<OrderCheck />} />
       </Routes>
     </Router>

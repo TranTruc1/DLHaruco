@@ -1,10 +1,23 @@
 import { useState, useEffect } from "react";
-import { siteConfig } from '../config'; 
+import { useNavigate } from "react-router-dom";
+import { siteConfig } from '../config';
 
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxpxLvR8v580_pSObdABIXxyTg8ag4PCiQwqbsRl71ekq2BlH_D1g6q5Gdu2pJMeIb_/exec";
+// ✅ Lấy scriptUrl từ config thay vì hardcode
+const SCRIPT_URL = siteConfig.scriptUrl;
 
-const init = {
-  product: "Đai lưng Haruco",
+// Sinh mã đơn hàng dạng HD-XXXXXX (6 ký tự chữ hoa + số)
+function generateOrderId() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let id = 'HD-';
+  for (let i = 0; i < 6; i++) {
+    id += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return id;
+}
+
+const PRODUCT_NAME = "Đai lưng Haruco";
+
+const initForm = {
   name: "",
   address: "",
   phone: "",
@@ -13,15 +26,16 @@ const init = {
 };
 
 export default function OrderForm() {
+  const navigate = useNavigate();
+
   const giaGoc = 350;
   const giaGiam = 210;
   const phanTramGiam = Math.round(((giaGoc - giaGiam) / giaGoc) * 100);
   const formatPrice = (price) => `$${price.toFixed(2)}`;
 
-  const [form, setForm] = useState(init);
-  const [status, setStatus] = useState("idle");
+  const [form, setForm] = useState(initForm);
+  const [status, setStatus] = useState("idle"); // idle | loading | error
   const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [countdown, setCountdown] = useState(5);
 
   // Lấy IP thực của người dùng
   useEffect(() => {
@@ -30,26 +44,6 @@ export default function OrderForm() {
       .then((data) => setForm((prev) => ({ ...prev, ip: data.ip })))
       .catch(() => setForm((prev) => ({ ...prev, ip: "unknown" })));
   }, []);
-
-  useEffect(() => {
-    let timer;
-    if (status === "success") {
-      setCountdown(5);
-      timer = setInterval(() => {
-        setCountdown((prev) => {
-          if (prev <= 1) {
-            clearInterval(timer);
-            setStatus("idle");
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-    }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [status]);
 
   const handleChange = (e) => {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -70,19 +64,39 @@ export default function OrderForm() {
     }
 
     setStatus("loading");
+
+    // ✅ Sinh mã đơn hàng tại đây (1 lần duy nhất)
+    const orderId = generateOrderId();
+
+    // ✅ Gộp tên sản phẩm + mã đơn hàng vào trường product
+    const payload = {
+      ...form,
+      product: `${PRODUCT_NAME} | Mã: ${orderId}`,
+    };
+
     try {
       await fetch(SCRIPT_URL, {
         method: "POST",
         mode: "no-cors",
         headers: { "Content-Type": "text/plain;charset=utf-8" },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
 
-      setStatus("success");
-      setForm((prev) => ({ ...init, ip: prev.ip }));
+      // ✅ Chuyển sang trang hóa đơn, truyền thông tin qua URL params
+      const params = new URLSearchParams({
+        orderId,
+        name: form.name,
+        phone: form.phone,
+        address: form.address,
+        payment: form.payment,
+        price: giaGiam.toString(),
+      });
+      navigate(`/invoice?${params.toString()}`);
+
     } catch {
       setStatus("error");
       alert("Có lỗi xảy ra, vui lòng thử lại!");
+      setStatus("idle");
     }
   };
 
@@ -135,7 +149,7 @@ export default function OrderForm() {
                     value={form.phone}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-300 outline-none transition"
-                    placeholder="Số PHONE*"
+                    placeholder="Số PHONE *"
                     required
                   />
                 </div>
@@ -167,7 +181,8 @@ export default function OrderForm() {
 
                 <button
                   type="submit"
-                  className="w-full bg-red-500 hover:bg-red-600 text-white font-extrabold py-3.5 rounded-xl text-lg transition mt-2 shadow-lg hover:shadow-red-500/40 hover:-translate-y-0.5 transform flex justify-center items-center gap-2"
+                  disabled={status === "loading"}
+                  className="w-full bg-red-500 hover:bg-red-600 disabled:bg-red-300 text-white font-extrabold py-3.5 rounded-xl text-lg transition mt-2 shadow-lg hover:shadow-red-500/40 hover:-translate-y-0.5 transform flex justify-center items-center gap-2"
                 >
                   🛒 Xác Nhận Đặt Hàng
                 </button>
@@ -178,6 +193,7 @@ export default function OrderForm() {
         </div>
       </div>
 
+      {/* Loading overlay */}
       {status === "loading" && (
         <div className="fixed inset-0 z-[110] flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm">
           <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mb-4 shadow-lg"></div>
@@ -186,28 +202,7 @@ export default function OrderForm() {
         </div>
       )}
 
-      {status === "success" && (
-        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 transition-opacity">
-          <div className="bg-white rounded-3xl p-8 max-w-sm w-full flex flex-col items-center text-center shadow-2xl scale-100 transform transition-transform animate-fade-in-up">
-            <div className="relative w-24 h-24 mb-6 flex items-center justify-center">
-              <div className="absolute inset-0 bg-green-400 rounded-full opacity-20 animate-ping"></div>
-              <div className="relative w-20 h-20 bg-green-100 rounded-full flex items-center justify-center shadow-inner">
-                <svg className="w-10 h-10 text-green-600 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
-            <h3 className="text-2xl font-extrabold text-gray-900 mb-2">Đặt Thành Công!</h3>
-            <p className="text-gray-600 font-medium mb-6">
-              Cảm ơn bạn. Đội ngũ Haruco sẽ liên hệ lại sớm nhất để xác nhận đơn hàng.
-            </p>
-            <div className="bg-gray-50 px-4 py-2 rounded-full border border-gray-200 text-sm font-medium text-gray-500">
-              Tự động đóng sau <span className="font-bold text-red-500 text-base">{countdown}</span> giây
-            </div>
-          </div>
-        </div>
-      )}
-
+      {/* Modal chọn thanh toán */}
       {showPaymentModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
           <div className="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl relative">
